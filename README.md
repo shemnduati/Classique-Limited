@@ -14,10 +14,15 @@ This Laravel project is designed to read Excel files and sort the data based on 
 <h2>Installlation</h2></br>
 <ul>
   <li>Clone the repository:</li>
+  <p>git clone https://github.com/shemnduati/Classique-Limited.git </p>
   <li>Install dependencies:</li>
+  <p>composer install</p>
   <li>Copy the .env.example file to .env and configure the database connection.</li>
-  <li>Generate application key:.</li>
-  <li>Run migrations:.</li>
+  <li>Generate application key:</li>
+  <p>php artisan key:generate</p>
+  <li>Run migrations:</li>
+  <p>php artisan migrate</p>
   <li>Serve the application:</li>
+  <p>php artisan serve</p>
 </ul>
 
