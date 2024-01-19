@@ -20,30 +20,35 @@ class ProductsImport implements ToCollection
     {
         // Get all users from the database
         $users = User::all();
-    
+
         // Skip the first row (headers row)
         $rows = $rows->slice(1);
-    
-        // Create an associative array to keep track of assigned product codes and their quantities
+
+        // Create an associative array to keep track of assigned product codes and their total quantities
         $assignedProducts = [];
-    
+
         foreach ($rows as $row) {
             // Get the product code and quantity from the current row
             $code = $row[0];
             $quantity = $row[1];
-    
+
             // Check if the product code has already been assigned
             if (array_key_exists($code, $assignedProducts)) {
-                // If assigned, update the quantity for the first assigned user
+                // If assigned, update the total quantity for the first assigned user
                 $user = User::find($assignedProducts[$code]['user_id']);
                 if ($user) {
-                    // Update the quantity for the existing product
-                    $user->products()->where('code', $code)->update(['quantity' => $quantity]);
+                    // Update the total quantity for the existing product
+                    $user->products()->where('code', $code)->update([
+                        'quantity' => $assignedProducts[$code]['total_quantity'] + $quantity,
+                    ]);
+
+                    // Update the total quantity in the assignedProducts array
+                    $assignedProducts[$code]['total_quantity'] += $quantity;
                 }
             } else {
                 // If not assigned, find a user for assignment
                 $user = $this->getUserForProductCode($code, $users, $assignedProducts);
-    
+
                 // Assign products based on rules
                 if ($user) {
                     // Assign products based on rules
@@ -51,13 +56,14 @@ class ProductsImport implements ToCollection
                         'code' => $code,
                         'quantity' => $quantity,
                     ]);
-    
-                    // Update the assigned products array
+
+                    // Update the assignedProducts array with the total quantity
                     $assignedProducts[$code] = [
                         'user_id' => $user->id,
                         'product_id' => $product->id,
+                        'total_quantity' => $quantity,
                     ];
-    
+
                     // Remove the user from the available users array to ensure they get only one code
                     $users = $users->reject(function ($availableUser) use ($user) {
                         return $availableUser->id == $user->id;
@@ -69,36 +75,6 @@ class ProductsImport implements ToCollection
             }
         }
     }
-private function getUserWithCode($users, $code, $usersWithCode)
-{
-    // Check if any user already has the given code
-    foreach ($users as $user) {
-        if ($this->userHasCode($usersWithCode, $user->id)) {
-            continue;
-        }
-
-        // Check if the user has the given code assigned
-        if ($user->products->where('code', $code)->isEmpty()) {
-            return $user;
-        }
-    }
-
-    return null;
-}
-
-
-    private function isCodeAssigned($code, $lastAssignedCode)
-    {
-        // Check if the code is already assigned to any user
-        return in_array($code, $lastAssignedCode);
-    }
-
-    private function userHasCode($usersWithCode, $userId)
-    {
-        // Check if the user already has a code assigned
-        return in_array($userId, $usersWithCode);
-    }
-
 
     private function getUserForProductCode($code, $users, $lastAssignedCode)
     {
