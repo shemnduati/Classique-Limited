@@ -83,6 +83,18 @@
           <span>File Upload</span>
         </a>
       </li><!-- End Dashboard Nav -->
+      <li class="nav-item">
+        <a class="nav-link " href="{{ route('products') }}">
+          <i class="bi bi-card-list"></i>
+          <span>Products Reports</span>
+        </a>
+      </li><!-- End Dashboard Nav -->
+      <li class="nav-item">
+        <a class="nav-link " href="{{ route('users') }}">
+          <i class="bi bi-people"></i>
+          <span>Users</span>
+        </a>
+      </li><!-- End Dashboard Nav -->
     
 
     </ul>

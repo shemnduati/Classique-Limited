@@ -18,19 +18,16 @@ class ExcelController extends Controller
             'file' => 'required|mimes:xlsx,xls',
         ]);
  
-        try {
-            $file = $request->file('file');
 
             $file = $request->file('file');
 
             $import = new ProductsImport();
             Excel::import($import, $file);
     
-            $assignedProducts = $import->getAssignedProducts();
+            //$assignedProducts = $import->getAssignedProducts();
+            return redirect()->route('products')->with('success', 'Products uploaded and assigned successfully.');
 
-            return view('assigned-products', compact('assignedProducts'));
-        } catch (\Exception $e) {
-            return redirect()->back()->withErrors(['error' => 'An error occurred during file processing. Please check your file and try again.']);
-        }
+
+
     }
 }

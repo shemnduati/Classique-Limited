@@ -1,6 +1,4 @@
 @extends('main')
-
-
 @section('content')
 <div class="pagetitle">
     <h1>File Upload</h1>
