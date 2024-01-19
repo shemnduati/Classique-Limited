@@ -17,8 +17,7 @@ class ExcelController extends Controller
         $request->validate([
             'file' => 'required|mimes:xlsx,xls',
         ]);
- 
-
+        try {
             $file = $request->file('file');
 
             $import = new ProductsImport();
@@ -27,6 +26,10 @@ class ExcelController extends Controller
             //$assignedProducts = $import->getAssignedProducts();
             return redirect()->route('products')->with('success', 'Products uploaded and assigned successfully.');
 
+            //return view('assigned-products', compact('assignedProducts'));
+        } catch (\Exception $e) {
+            return redirect()->back()->withErrors(['error' => 'An error occurred during file processing. Please check your file and try again.']);
+        }
 
 
     }
